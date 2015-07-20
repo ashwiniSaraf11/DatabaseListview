@@ -1,0 +1,93 @@
+package com.exceptionaire.Web;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+
+public class LocalSettings {
+	public static final String PREFS_NAME = "MyPrefsFile";
+	public static String fb_firstname;
+	public static String fb_lastname;
+	public static String fb_email_ID;
+	public static String fb_userID;
+	public static String base_store_id;
+	public static String switch_store_id;
+	public static String login_user_id;
+	static SharedPreferences settings;
+	public static boolean isFirstTimeLogin_FB=false;
+	public static boolean isStoreOrderSelected=false;
+	public static boolean isfb_share=false;
+	public static int isEmailIdEnter=0;
+	public static String uniqueKeyId;
+	public static boolean isUniqueIDCreate=true;
+	public static String currentDeviceTime;
+	public static String startDateTime;
+	public static boolean isCheckOut=false;
+	public static boolean fromStoreListActivity=false;
+	public static String discount_value;
+	public static String tax_value;
+	public static String gross_amount;
+	public static String redeem_id;
+	public static String shipping_amount;
+	public static String store_extraCharges;
+	public static boolean isRedeem=false;
+	public static boolean isSpinnerSelected=false;
+	public static void Init(Context paramContext) {
+		settings = paramContext.getSharedPreferences("MyPrefsFile", 0);
+	}
+	public static void Load() {
+		currentDeviceTime = settings.getString("currentDeviceTime", "");
+		fb_firstname = settings.getString("fb_firstname", "");
+		uniqueKeyId = settings.getString("uniqueKeyId", "");
+		fb_userID = settings.getString("fb_userID", "sst");
+		fb_lastname = settings.getString("fb_lastname", "");
+		fb_email_ID = settings.getString("fb_email_ID", "");
+		base_store_id = settings.getString("current_store_id", "");
+		switch_store_id = settings.getString("switch_store_id", "");
+		login_user_id = settings.getString("login_user_id", "");
+		isFirstTimeLogin_FB = settings.getBoolean("isFirstTimeLogin_FB", false);
+		isFirstTimeLogin_FB = settings.getBoolean("isStoreOrderSelected", false);
+		isEmailIdEnter = settings.getInt("isEmailIdEnter", 0);
+		isfb_share = settings.getBoolean("isfb_share", false);
+		isCheckOut = settings.getBoolean("isCheckOut", false);
+		isUniqueIDCreate = settings.getBoolean("isUniqueIDCreate", true);
+		fromStoreListActivity = settings.getBoolean("fromStoreListActivity", true);
+		startDateTime = settings.getString("startDateTime", "");
+	    discount_value=settings.getString("discount_value", "0");
+		tax_value = settings.getString("tax_value", "");
+		gross_amount = settings.getString("gross_amount", "");
+		shipping_amount = settings.getString("shipping_amount", "0");
+		redeem_id = settings.getString("redeem_id", "0");
+		store_extraCharges=settings.getString("store_extraCharges", "0");
+		isRedeem = settings.getBoolean("isRedeem", false);
+		isSpinnerSelected = settings.getBoolean("isSpinnerSelected", false);
+	}
+	public static void Save() {
+		SharedPreferences.Editor localEditor = settings.edit();
+		localEditor.putString("store_extraCharges", store_extraCharges);
+		localEditor.putString("redeem_id", redeem_id);
+		localEditor.putString("discount_value", discount_value);
+		localEditor.putString("shipping_amount", shipping_amount);
+		localEditor.putString("tax_value", tax_value);
+		localEditor.putString("startDateTime", startDateTime);
+		localEditor.putString("uniqueKeyId", uniqueKeyId);
+		localEditor.putString("currentDeviceTime", currentDeviceTime);
+		localEditor.putString("fb_firstname", fb_firstname);
+		localEditor.putString("base_store_id", base_store_id);
+		localEditor.putString("switch_store_id", switch_store_id);
+		localEditor.putString("login_user_id", login_user_id);
+		localEditor.putString("fb_userID", fb_userID);
+		localEditor.putString("fb_lastname", fb_lastname);
+		localEditor.putString("fb_email_ID", fb_email_ID);
+		localEditor.putBoolean("isFirstTimeLogin_FB", isFirstTimeLogin_FB);
+		localEditor.putBoolean("isStoreOrderSelected", isStoreOrderSelected);
+		localEditor.putInt("isEmailIdEnter", isEmailIdEnter);
+		localEditor.putBoolean("isfb_share", isfb_share);
+		localEditor.putBoolean("isCheckOut", isCheckOut);
+		localEditor.putBoolean("isUniqueIDCreate", isUniqueIDCreate);
+		localEditor.putBoolean("fromStoreListActivity", fromStoreListActivity);
+		localEditor.putBoolean("isRedeem", isRedeem);
+		localEditor.putBoolean("isSpinnerSelected", isSpinnerSelected);
+		localEditor.commit();
+	}
+
+}
