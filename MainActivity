@@ -1,0 +1,76 @@
+//Main activity
+
+
+
+package com.example.sqliteproject;
+
+import java.util.ArrayList;
+
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.widget.ListView;
+
+import com.exceptionaire.Web.WebApi;
+import com.exceptionire.database.HistoryMessageProvider;
+
+
+public class MainActivity extends Activity {
+	ArrayList<JsonDTO> jsonDTOsList=new ArrayList<JsonDTO>();
+	ListView listview;
+	HistoryMessageProvider historyMessageProvider;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        listview=(ListView)findViewById(R.id.listview);
+        historyMessageProvider= new HistoryMessageProvider(MainActivity.this);
+        historyMessageProvider.deleteCategory();
+        new LoginTask().execute();
+    }
+    public class LoginTask extends AsyncTask<Void, Void, Void> {
+
+		private ProgressDialog Dialog = new ProgressDialog(MainActivity.this);
+		String data = "", rstatus_login = "0";
+
+		int sizeData = 0;
+		String Result = "";
+		String status = "";
+
+		protected void onPreExecute() {
+			Dialog.setMessage("Loading...");
+			Dialog.setCancelable(false);
+			Dialog.show();
+
+		}
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			// TODO Auto-generated method stub
+			try {
+				// Web Api
+				
+				WebApi.getJsonList(MainActivity.this);
+				jsonDTOsList=historyMessageProvider.getJsonListFromDB();
+				historyMessageProvider.closeConnection();
+
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+
+			return null;
+		}
+
+		@SuppressLint("NewApi")
+		protected void onPostExecute(Void unused) {
+			Dialog.dismiss();
+			JsonListAdapter categoryListAdapter=new JsonListAdapter(MainActivity.this, jsonDTOsList);
+			listview.setAdapter(categoryListAdapter);
+			categoryListAdapter.notifyDataSetChanged();
+
+		}
+	}
+   
+}
