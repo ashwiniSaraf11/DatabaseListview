@@ -1,0 +1,12 @@
+package com.exceptionaire.Web;
+
+public class WebUrl {
+	public static final int GO_TO_HOME = 9999;
+	public static final String WebService;
+
+	static {
+
+		WebService = "http://mybellysplaylist.exceptionaire.co/mobile-api/webservice.php";
+	}
+
+}
