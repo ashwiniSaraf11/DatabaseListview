@@ -1,0 +1,401 @@
+package com.exceptionire.database;
+
+import java.util.ArrayList;
+
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+
+import com.example.sqliteproject.JsonDTO;
+
+public class HistoryMessageProvider {
+
+	private DatabaseHelper dbHelper = null;
+	private static final String LOG_TAG = "HistoryMessageProvider";
+	public static final String STORE_CATEGORY_INFO_TABLE = "STORE_CATEGORY_INFO_TABLE";
+	public static final String STORE_ID = "STORE_ID";
+	public static final String CATEGORY_ID = "CATEGORY_ID";
+	public static final String STORE_NAME = "STORE_NAME";
+	public static final String CATEGORY_NAME = "CATEGORY_NAME";
+	public static final String STORE_ADDRESS = "STORE_ADDRESS";
+	public static final String STORE_PHONE_NUM = "STORE_PHONE_NUM";
+	public static final String STORE_EMAIL_ID = "STORE_EMAIL_ID";
+	public static final String STORE_DISTANCE = "STORE_DISTANCE";
+	static int cnt = 1;
+	// table 2
+
+	public static final String PRODUCT_INFO_TABLE = "PRODUCT_INFO_TABLE";
+	public static final String KEY_PRIMARY_ID = "ID";
+	public static final String KEY_STORE_ID = "STORE_ID";
+	public static final String KEY_PRODUCT_CATEGORY_ID = "CATEGORY_ID";
+	public static final String KEY_PRODUCT_CATEGORY_NAME = "CATEGORY_NAME";
+	public static final String KEY_PRODUCT_ID = "PRODUCT_ID";
+	public static final String KEY_PRODUCT_NAME = "PRODUCT_NAME";
+	public static final String KEY_PRODUCT_ORIGNAL_PRICE = "PRODUCT_ORIGNAL_PRICE";
+	public static final String KEY_PRODUCT_TOTAL_PRICE = "PRODUCT_TOTAL_PRICE";
+	public static final String KEY_PRODUCT_QUANTITY = "PRODUCT_QUANTITY";
+	public static final String KEY_PRODUCT_OPTION = "PRODUCT_OPTION";
+	public static final String KEY_PRODUCT_OPTION_ID = "PRODUCT_OPTION_ID";
+	public static final String KEY_SELECTED_PRODUCT_FLAG = "SELECTED_PRODUCT_FLAG";
+	
+	//TABLE 3
+	public static final String USER_INFO_TABLE = "USER_INFO_TABLE";
+	public static final String KEY_FACEBOOK_USER_ID = "FACEBOOK_USER_ID";
+	public static final String KEY_USER_EMAIL_ID = "USER_EMAIL_ID";
+	//TABLE 4
+	
+	public static final String USER_STORE_INFO_TABLE = "USER_STORE_INFO_TABLE";
+	public static final String KEY_LOGIN_USER_ID = "LOGIN_USER_ID";
+	public static final String KEY_BASE_STORE_ID = "BASE_STORE_ID";
+	public static final String KEY_SWITCH_STORE_ID = "SWITCH_STORE_ID";
+	public static final String KEY_IS_EXTRA_CHARGES = "IS_EXTRA_CHARGES";
+
+
+	/** Constructor */
+	public HistoryMessageProvider(Context context) {
+		Log.v(LOG_TAG, "context=" + context.toString());
+		dbHelper = new DatabaseHelper(context);
+	}
+
+	/**
+	 * Get the database connection.
+	 */
+	public SQLiteDatabase getConnection() {
+		return dbHelper.getWritableDatabase();
+	}
+
+	/**
+	 * Close the database connection.
+	 */
+	public void closeConnection() {
+		dbHelper.close();
+	}
+
+	public void addJsonDataInfo(String store_id, String category_id,
+			String store_name, String category_name, String store_address,
+			String store_phone_num, String strore_email_id,
+			String store_distance) {
+		// event_title = event_title.replaceAll("'", "@");
+		// long startTime = getMilliSeconds(start_date);
+		String sql = "insert into " + STORE_CATEGORY_INFO_TABLE + "("
+				+ STORE_ID + "," + CATEGORY_ID + "," + STORE_NAME + ","
+				+ CATEGORY_NAME + "," + STORE_ADDRESS + "," + STORE_PHONE_NUM
+				+ "," + STORE_EMAIL_ID + "," + STORE_DISTANCE + ") "
+				+ "values('" + store_id + "','" + category_id + "','"
+				+ store_name + "','" + category_name + "','" + store_address
+				+ "','" + store_phone_num + "','" + strore_email_id + "','"
+				+ store_distance + "')";
+		dbHelper.insert(sql);
+		System.out.println("addStoreCategoryInfo:" + sql);
+	}
+
+	public void addCategoryProductInfo(String store_id, String category_id,
+			String category_name, String product_id, String product_name,
+			String product_orignal_price, String product_total_price,
+			String product_quantity, String product_option,String product_option_id,
+			String selected_product_flag) {
+
+		String sql = "insert into " + PRODUCT_INFO_TABLE + "(" + KEY_STORE_ID
+				+ "," + KEY_PRODUCT_CATEGORY_ID + ","
+				+ KEY_PRODUCT_CATEGORY_NAME + "," + KEY_PRODUCT_ID + ","
+				+ KEY_PRODUCT_NAME + "," + KEY_PRODUCT_ORIGNAL_PRICE + ","
+				+ KEY_PRODUCT_TOTAL_PRICE + "," + KEY_PRODUCT_QUANTITY + ","
+				+ KEY_PRODUCT_OPTION + "," + KEY_PRODUCT_OPTION_ID + "," + KEY_SELECTED_PRODUCT_FLAG + ")"
+				+ "values('" + store_id + "','" + category_id + "','"
+				+ category_name + "','" + product_id + "','" + product_name
+				+ "','" + product_orignal_price + "','" + product_total_price
+				+ "','" + product_quantity + "','" + product_option + "','"+ product_option_id + "','"+ selected_product_flag + "')";
+		dbHelper.insert(sql);
+		System.out.println("addCategoryProductInfo:  " + sql);
+
+	}
+	public ArrayList<JsonDTO> getJsonListFromDB() {
+		ArrayList<JsonDTO> stored_dtoList = new ArrayList<JsonDTO>();
+		String query = "SELECT * FROM " + STORE_CATEGORY_INFO_TABLE ;
+		/*String query = "SELECT * FROM " + STORE_CATEGORY_INFO_TABLE + " WHERE "
+				+ STORE_ID + "=" + store_id;*/
+		Cursor cursor = dbHelper.getWritableDatabase().rawQuery(query, null);
+		int count = cursor.getCount();
+		Log.v("count form getAllContacts", String.valueOf(count));
+		if (cursor.moveToFirst()) {
+			do {
+				JsonDTO stored_dto = new JsonDTO();
+				stored_dto.id = (cursor.getString(cursor.getColumnIndex(STORE_ID)));
+				stored_dto.name = (cursor.getString(cursor.getColumnIndex(STORE_NAME)));
+				/*stored_dto.category_id = (cursor.getString(cursor.getColumnIndex(CATEGORY_ID)));
+				stored_dto.category_name = (cursor.getString(cursor.getColumnIndex(CATEGORY_NAME)));
+				stored_dto.store_address = (cursor.getString(cursor.getColumnIndex(STORE_ADDRESS)));
+				stored_dto.store_phone_num = (cursor.getString(cursor.getColumnIndex(STORE_PHONE_NUM)));
+				stored_dto.store_email_id = (cursor.getString(cursor.getColumnIndex(STORE_EMAIL_ID)));
+				stored_dto.store_distance = (cursor.getString(cursor.getColumnIndex(STORE_DISTANCE)));*/
+				Log.v(LOG_TAG, "Reteive data from database " + query);
+				stored_dtoList.add(stored_dto);
+			} while (cursor.moveToNext());
+
+		}
+		cursor.close();
+		return stored_dtoList;
+
+	}
+	public void deleteCategory() {
+		String sql_delete = "delete from " + STORE_CATEGORY_INFO_TABLE  ;
+		dbHelper.delete(sql_delete);
+		Log.v("Messages :", dbHelper.toString());
+
+	}
+	/*// getting all events added years
+	public boolean isEventAddedOnThisYear(int year) {
+		boolean flag = false;
+		String query = "SELECT * FROM " + STORE_CATEGORY_INFO_TABLE + " where "
+				+ "(" + STORE_NAME + " = '" + year + "'" + ")";
+		Cursor cursor = dbHelper.getWritableDatabase().rawQuery(query, null);
+		int count = cursor.getCount();
+		Log.v(LOG_TAG, query + " toatl records" + count);
+		if (count > 0)
+			flag = true;
+
+		cursor.close();
+
+		return flag;
+	}
+
+	public List<ShowProductCartDTO> getAllProductList(String store_id) {
+		List<ShowProductCartDTO> cartList = new ArrayList<ShowProductCartDTO>();
+		String query = "SELECT * FROM " + PRODUCT_INFO_TABLE + " WHERE "
+				+ KEY_STORE_ID + "=" + store_id;
+		Cursor cursor = dbHelper.getWritableDatabase().rawQuery(query, null);
+		int count = cursor.getCount();
+		Log.v("count form getAllContacts", String.valueOf(count));
+		if (cursor.moveToFirst()) {
+			do {
+				ShowProductCartDTO Dto = new ShowProductCartDTO();
+				Dto.category_id = (cursor.getString(cursor.getColumnIndex(KEY_PRODUCT_CATEGORY_ID)));
+				Dto.category_name = (cursor.getString(cursor.getColumnIndex(KEY_PRODUCT_CATEGORY_NAME)));
+				Dto.product_id = (cursor.getString(cursor.getColumnIndex(KEY_PRODUCT_ID)));
+				Dto.product_name = (cursor.getString(cursor.getColumnIndex(KEY_PRODUCT_NAME)));
+				Dto.product_orignal_price = (cursor.getString(cursor.getColumnIndex(KEY_PRODUCT_ORIGNAL_PRICE)));
+				Dto.product_option = (cursor.getString(cursor.getColumnIndex(KEY_PRODUCT_OPTION)));
+				Dto.product_quantity = (cursor.getString(cursor.getColumnIndex(KEY_PRODUCT_QUANTITY)));
+				Dto.product_total_price = (cursor.getString(cursor.getColumnIndex(KEY_PRODUCT_TOTAL_PRICE)));
+				Dto.product_option_id=(cursor.getString(cursor.getColumnIndex(KEY_PRODUCT_OPTION_ID)));
+				Dto.primary_id=(cursor.getString(cursor.getColumnIndex(KEY_PRIMARY_ID)));
+				cartList.add(Dto);
+				Log.v(LOG_TAG, "Reteive data from database " + query);
+
+			} while (cursor.moveToNext());
+
+		}
+		cursor.close();
+		return cartList;
+
+	}
+
+	public ArrayList<StoreCategoryDTO> getStoreList(String store_id) {
+		ArrayList<StoreCategoryDTO> stored_dtoList = new ArrayList<StoreCategoryDTO>();
+		String query = "SELECT * FROM " + STORE_CATEGORY_INFO_TABLE + " WHERE "
+				+ STORE_ID + "=" + store_id;
+		Cursor cursor = dbHelper.getWritableDatabase().rawQuery(query, null);
+		int count = cursor.getCount();
+		Log.v("count form getAllContacts", String.valueOf(count));
+		if (cursor.moveToFirst()) {
+			do {
+				StoreCategoryDTO stored_dto = new StoreCategoryDTO();
+				stored_dto.store_id = (cursor.getString(cursor.getColumnIndex(STORE_ID)));
+				stored_dto.store_name = (cursor.getString(cursor.getColumnIndex(STORE_NAME)));
+				stored_dto.category_id = (cursor.getString(cursor.getColumnIndex(CATEGORY_ID)));
+				stored_dto.category_name = (cursor.getString(cursor.getColumnIndex(CATEGORY_NAME)));
+				stored_dto.store_address = (cursor.getString(cursor.getColumnIndex(STORE_ADDRESS)));
+				stored_dto.store_phone_num = (cursor.getString(cursor.getColumnIndex(STORE_PHONE_NUM)));
+				stored_dto.store_email_id = (cursor.getString(cursor.getColumnIndex(STORE_EMAIL_ID)));
+				stored_dto.store_distance = (cursor.getString(cursor.getColumnIndex(STORE_DISTANCE)));
+				Log.v(LOG_TAG, "Reteive data from database " + query);
+				stored_dtoList.add(stored_dto);
+			} while (cursor.moveToNext());
+
+		}
+		cursor.close();
+		return stored_dtoList;
+
+	}
+
+	// getting store information
+
+	public ArrayList<StoreCategoryDTO> getStoreInfo() {
+		ArrayList<StoreCategoryDTO> stored_dtoList = new ArrayList<StoreCategoryDTO>();
+		String query = "SELECT * FROM " + STORE_CATEGORY_INFO_TABLE;
+		Cursor cursor = dbHelper.getWritableDatabase().rawQuery(query, null);
+		int count = cursor.getCount();
+		Log.v("count form getAllContacts", String.valueOf(count));
+		if (cursor.moveToFirst()) {
+			do {
+				StoreCategoryDTO stored_dto = new StoreCategoryDTO();
+				stored_dto.store_id = (cursor.getString(cursor
+						.getColumnIndex(STORE_ID)));
+				stored_dto.store_name = (cursor.getString(cursor
+						.getColumnIndex(STORE_NAME)));
+				stored_dto.category_id = (cursor.getString(cursor
+						.getColumnIndex(CATEGORY_ID)));
+				stored_dto.category_name = (cursor.getString(cursor
+						.getColumnIndex(CATEGORY_NAME)));
+				stored_dto.store_address = (cursor.getString(cursor
+						.getColumnIndex(STORE_ADDRESS)));
+				stored_dto.store_phone_num = (cursor.getString(cursor
+						.getColumnIndex(STORE_PHONE_NUM)));
+				stored_dto.store_email_id = (cursor.getString(cursor
+						.getColumnIndex(STORE_EMAIL_ID)));
+				stored_dto.store_distance = (cursor.getString(cursor
+						.getColumnIndex(STORE_DISTANCE)));
+				Log.v(LOG_TAG, "Total store information from DB " + query);
+				stored_dtoList.add(stored_dto);
+
+			} while (cursor.moveToNext());
+
+		}
+		cursor.close();
+		return stored_dtoList;
+
+	}
+
+	public void deleteCategoryProductInfoTable() {
+		String sql_delete = "delete from " + PRODUCT_INFO_TABLE;
+		dbHelper.delete(sql_delete);
+		Log.v("Delete table:" + PRODUCT_INFO_TABLE, sql_delete);
+
+	}
+
+	public void deleteStoreCategoryTable() {
+		String sql_delete = "delete from " + STORE_CATEGORY_INFO_TABLE;
+		dbHelper.delete(sql_delete);
+		Log.v("Delete table:" + PRODUCT_INFO_TABLE, sql_delete);
+
+	}
+
+	public void deleteCategory(String category_id) {
+		String sql_delete = "delete from " + PRODUCT_INFO_TABLE + " where "
+				+ "(" + KEY_PRODUCT_CATEGORY_ID + " = '" + category_id + "'"
+				+ ")";
+		dbHelper.delete(sql_delete);
+		Log.v("Messages :", dbHelper.toString());
+
+	}
+	
+	public void deleteCategory(String primary_id) {
+		String sql_delete = "delete from " + PRODUCT_INFO_TABLE + " where "
+				+ "(" + KEY_PRIMARY_ID + " = '" + primary_id + "'"
+				+ ")";
+		dbHelper.delete(sql_delete);
+		Log.v("Messages :", dbHelper.toString());
+
+	}
+
+	public void deleteStoreCategory(String category_id) {
+		String sql_delete = "delete from " + STORE_CATEGORY_INFO_TABLE
+				+ " where " + "(" + CATEGORY_ID + " = '" + category_id + "'"
+				+ ")";
+		dbHelper.delete(sql_delete);
+		Log.v("Messages :", dbHelper.toString());
+
+	}
+
+	// update particular data of product info table
+	public void updateProductInfoTableCategory(String category_id) {
+
+		// matching_record_value="123";
+		String strSQL = "UPDATE " + PRODUCT_INFO_TABLE + " SET "
+				+ KEY_SELECTED_PRODUCT_FLAG + " = '" + "1" + "'" + " WHERE "
+				+ "(" + KEY_PRODUCT_CATEGORY_ID + " = '" + category_id + "'"
+				+ ")";
+		dbHelper.update(strSQL);
+		Log.v("Update database from selected category :", strSQL);
+
+	}
+	//TABLE 3
+	//
+	public void addUserDetail(String fb_userId, String email_id) {
+		// event_title = event_title.replaceAll("'", "@");
+		// long startTime = getMilliSeconds(start_date);
+		String sql = "insert into " + USER_INFO_TABLE + "("+ KEY_FACEBOOK_USER_ID + "," + KEY_USER_EMAIL_ID + ") "
+				+ "values('" + fb_userId + "','" + email_id + "')";
+		dbHelper.insert(sql);
+		System.out.println("add facebook user details--:" + sql);
+	}
+	public UserDTO getUserDetailList(String facebook_user_id) {
+		UserDTO userdto= new UserDTO();
+		String query = "SELECT * FROM " + USER_INFO_TABLE + " WHERE " + KEY_FACEBOOK_USER_ID + "=" + facebook_user_id;
+		Cursor cursor = dbHelper.getWritableDatabase().rawQuery(query, null);
+		int count = cursor.getCount();
+		if (cursor.moveToFirst()) {
+			do {
+				userdto.facebook_userID = (cursor.getString(cursor.getColumnIndex(KEY_FACEBOOK_USER_ID)));
+				userdto.user_email_id = (cursor.getString(cursor.getColumnIndex(KEY_USER_EMAIL_ID)));
+				Log.v(LOG_TAG, "Reteive data from database " + query);
+
+			} while (cursor.moveToNext());
+
+		}
+		cursor.close();
+		return userdto;
+
+	}
+	public int getCountOFProductTable(){
+		//String query = "SELECT COUNT(*) FROM PRODUCT_INFO_TABLE ";
+		String query = "SELECT * FROM PRODUCT_INFO_TABLE ";
+		Cursor cursor = dbHelper.getWritableDatabase().rawQuery(query, null);
+		int count = cursor.getCount();
+		System.out.println("Count is"+count);
+		cursor.close();
+		return count;
+		
+	}
+	
+	// get sync user list
+		public boolean UserTableIsEmpty() {
+			String query = "SELECT * FROM " + PRODUCT_INFO_TABLE;
+			Cursor cursor = dbHelper.getWritableDatabase().rawQuery(query, null);
+			int count = cursor.getCount();
+			Log.v("count of friendListIsEmpty", String.valueOf(count));
+			cursor.close();
+			if (count == 0)
+				return true;
+			else
+				return false;
+
+		}
+	
+	public void updateUserEmailID(String fb_userID, String email_id) {
+		String strSQL = "UPDATE " + USER_INFO_TABLE + " SET " + KEY_USER_EMAIL_ID
+				+ " = '" + email_id + "'" + " WHERE " + "(" + KEY_FACEBOOK_USER_ID
+				+ " = '" + fb_userID + "'" + ")";
+		dbHelper.update(strSQL);
+
+	}
+	// adding events
+	public static String getDate(long milliSeconds) {
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(milliSeconds);
+		return formatter.format(calendar.getTime());
+	}
+
+	public void addUserStoreInfo(String login_user_id, String base_store_id,String switch_storeid,String isextra_charges) {
+		// event_title = event_title.replaceAll("'", "@");
+		// long startTime = getMilliSeconds(start_date);
+		String sql = "insert into " + USER_INFO_TABLE + "("+ KEY_FACEBOOK_USER_ID + "," + KEY_USER_EMAIL_ID + ") "
+				+ "values('" + fb_userId + "','" + email_id + "')";
+		dbHelper.insert(sql);
+		System.out.println("add facebook user details--:" + sql);
+	}
+	public static long getMilliSeconds(String date) throws ParseException {
+		Date dateSample = null;
+		try {
+			SimpleDateFormat formatter;
+			formatter = new SimpleDateFormat("MM-d-yyyy");
+			dateSample = (Date) formatter.parse(date);
+		} catch (Exception e) {
+		}
+
+		return dateSample.getTime();
+	}*/
+
+}
