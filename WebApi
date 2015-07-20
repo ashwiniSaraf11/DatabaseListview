@@ -1,0 +1,1017 @@
+
+
+package com.exceptionaire.Web;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import android.content.Context;
+import android.util.Log;
+
+import com.example.sqliteproject.JsonDTO;
+import com.example.sqliteproject.MainActivity;
+import com.exceptionire.database.HistoryMessageProvider;
+
+public class WebApi {
+
+	public static boolean UpdateFlag;
+	public static Context _context;
+	static WebClient mClient = new WebClient(WebUrl.WebService);
+	private static final String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+			+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+	private static Pattern pattern;
+	private static Matcher matcher;
+	static {
+		UpdateFlag = false;
+	}
+
+
+	/*// Login API coopsopen
+	public static AuthenticatDTO getLoginNew(String firstname, String fb_id,
+			String email_id, String storeid) {
+		AuthenticatDTO localLoginFormDto=new AuthenticatDTO();
+		try {
+			RestClient restClient = new RestClient("http://test.scalebuddy.com/Webservices_SB/webservice.cfc");
+			restClient.addParam("method", "checkscalebuddylogin");
+			restClient.addParam("username", "lincoln");
+			restClient.addParam("password", "anderson");
+			//http://test.scalebuddy.com/Webservices_SB/webservice.cfc?method=nearbyScales&latitude=47.439805&longitude=-52.974219&user_id=1
+			//second url
+			restClient.addParam("method", "nearbyScales");
+			restClient.addParam("latitude", "47.439805");
+			restClient.addParam("longitude", "-52.974219");
+			restClient.addParam("user_id", "1");
+
+			//				http://test.scalebuddy.com/Webservices/webservice.cfc?method=nearbyScales&latitude=47.439805&longitude=-52.974219&user_id=1
+			restClient.execute(RequestMethod.POST, "xcvb", "hcx");
+			HttpResponse response = restClient.getResponse();
+			String responseBody =RestClient.convertStreamToStringHTTP(response);
+
+			int responseCode = response.getStatusLine().getStatusCode();
+			switch(responseCode) {
+			case 200:
+			HttpEntity entity = response.getEntity();
+			    if(entity != null) {
+			    	try {
+						responseBody = EntityUtils.toString(entity);
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			    }
+			    break;
+			}
+
+			System.out.println("RESPONSE :::::::::::::::::::::::::" +responseBody);
+		} catch (MalformedURLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+
+		mClient.ClearParam();
+		mClient.AddParam("task", "login");
+		mClient.AddParam("firstname", firstname);
+		mClient.AddParam("fb_id", fb_id);
+		mClient.AddParam("email_id", email_id);
+		mClient.AddParam("storeid", storeid);
+		//{"login":[{"result":"1","userid":736,"first_name":"Sagie","base_storeid":"6",
+		//"email_id":"sagietosagie@yahoo.com"}]}
+
+		try {
+			//	mClient.Execute(1);
+			//String response = mClient.getResponse();
+			//				if (!"".equalsIgnoreCase(response) && response != null) {
+			//					Log.v("Login Form Response:", response);
+			//					JSONObject localJSONObject = (JSONObject) new JSONObject(response).getJSONArray("login").get(0);
+			//					if (localJSONObject.has("result")) {
+			//						localLoginFormDto.authResult = localJSONObject.getString("result");
+			//					}
+			//					if (localJSONObject.has("userid")) {
+			//						localLoginFormDto.userID = localJSONObject.optString("userid");
+			//					}
+			//					if (localJSONObject.has("first_name")) {
+			//						localLoginFormDto.firstname = localJSONObject.optString("first_name");
+			//					}
+			//					if (localJSONObject.has("base_storeid")) {
+			//						localLoginFormDto.base_storeid = localJSONObject.optString("base_storeid");
+			//					}
+			//					if (localJSONObject.has("email_id")) {
+			//						localLoginFormDto.email_id = localJSONObject.optString("email_id");
+			//					}
+			//
+			//				}
+
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return localLoginFormDto;
+	}
+	 */
+	/*private static String convertStreamToString(InputStream is) {
+
+		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+		StringBuilder sb = new StringBuilder();
+
+		String line = null;
+		try {
+			while ((line = reader.readLine()) != null) {
+				sb.append((line + "\n"));
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				is.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return sb.toString();
+	}
+
+
+	// Login API
+	public static AuthenticatDTO getLogin(String firstname, String fb_id,
+			String email_id, String storeid) {
+		AuthenticatDTO localLoginFormDto=new AuthenticatDTO();
+		mClient.ClearParam();
+		mClient.AddParam("task", "login");
+		mClient.AddParam("firstname", firstname);
+		mClient.AddParam("fb_id", fb_id);
+		mClient.AddParam("email_id", email_id);
+		mClient.AddParam("storeid", storeid);
+		//{"login":[{"result":"1","userid":736,"first_name":"Sagie","base_storeid":"6",
+		//"email_id":"sagietosagie@yahoo.com"}]}
+
+		try {
+			mClient.Execute(1);
+			String response = mClient.getResponse();
+			if (!"".equalsIgnoreCase(response) && response != null) {
+				Log.v("Login Form Response:", response);
+				JSONObject localJSONObject = (JSONObject) new JSONObject(response).getJSONArray("login").get(0);
+				if (localJSONObject.has("result")) {
+					localLoginFormDto.authResult = localJSONObject.getString("result");
+				}
+				if (localJSONObject.has("userid")) {
+					localLoginFormDto.userID = localJSONObject.optString("userid");
+				}
+				if (localJSONObject.has("first_name")) {
+					localLoginFormDto.firstname = localJSONObject.optString("first_name");
+				}
+				if (localJSONObject.has("base_storeid")) {
+					localLoginFormDto.base_storeid = localJSONObject.optString("base_storeid");
+				}
+				if (localJSONObject.has("email_id")) {
+					localLoginFormDto.email_id = localJSONObject.optString("email_id");
+				}
+
+			}
+
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return localLoginFormDto;
+	}
+*/
+
+/*	public static AuthenticatDTO getAuthenticate(String fbid) {
+		AuthenticatDTO authdto=new AuthenticatDTO();
+		mClient.ClearParam();
+		mClient.AddParam("task", "authenticate");
+		mClient.AddParam("fbid", fbid);
+		if not :
+		{"authenticate":[{"result":"0", "error":"User not exist"}]}
+		if yes:
+		{"authenticate"[{"result":"1","userid":726,"first_name":"Sagie","base_storeid":"6","email_id":"sagietosagie@yahoo.com"}]}
+
+		try {
+			mClient.Execute(0);
+			String response = mClient.getResponse();
+			if (!"".equalsIgnoreCase(response) && response != null) {
+				Log.v("Authenticate Response::", response);
+				JSONObject localJSONObject = (JSONObject) new JSONObject(response).getJSONArray("authenticate").get(0);
+				if (localJSONObject.has("result")) {
+					authdto.authResult = localJSONObject.getString("result");
+					System.out.println(""+authdto.authResult);
+				}
+				if(localJSONObject.getString("result").equalsIgnoreCase("1")){
+
+					if (localJSONObject.has("userid")) {
+						authdto.userID = localJSONObject.optString("userid");
+					}
+					if (localJSONObject.has("first_name")) {
+						authdto.firstname = localJSONObject.optString("first_name");
+					}
+					if (localJSONObject.has("base_storeid")) {
+						authdto.base_storeid = localJSONObject.optString("base_storeid");
+					}
+					if (localJSONObject.has("email_id")) {
+						authdto.email_id = localJSONObject.optString("email_id");
+					}
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return authdto;
+	}*/
+	//http://mybellysplaylist.exceptionaire.co/mobile-api/webservice.php?task=validateqty&storeid=6&productid=161&qty=3&uid=736
+	//http://mybellysplaylist.exceptionaire.co/mobile-api/webservice.php?task=addtocart&storeid=6&productid=161&qty=17&unid=122312156
+	/*public static ProQtyDTO getProQTY(String storeid, String productid,String qty,String unid) {
+		ProQtyDTO prodto=new ProQtyDTO();
+		mClient.ClearParam();
+		mClient.AddParam("task", "addtocart");
+		mClient.AddParam("storeid", storeid);
+		mClient.AddParam("productid", productid);
+		mClient.AddParam("qty", qty);
+		mClient.AddParam("unid", unid);
+		try {
+			mClient.Execute(0);
+			String response = mClient.getResponse();
+			if (!"".equalsIgnoreCase(response) && response != null) {
+				Log.v("QTY Response::", response);
+				JSONObject localJSONObject = (JSONObject) new JSONObject(response).getJSONArray("addtocart").get(0);
+				if (localJSONObject.has("result")) {
+					prodto.qtyResult = localJSONObject.getString("result");
+					System.out.println(""+prodto.qtyResult);
+				}
+				if (localJSONObject.has("availableQty")) {
+					prodto.qtyAvailable = localJSONObject.optString("availableQty");
+
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return prodto;
+	}*/
+	/*public static HashMap<String, String> getAuthenticate(String firstname, String fb_id,
+			String email_id, String storeid) {
+
+		HashMap<String, String> hashmap = new HashMap<String, String>();
+		String key = "";
+		String Value = "";
+		mClient.ClearParam();
+		mClient.AddParam("task", "login");
+		mClient.AddParam("firstname", firstname);
+		mClient.AddParam("fb_id", fb_id);
+		mClient.AddParam("email_id", email_id);
+		mClient.AddParam("storeid", storeid);
+		try {
+			System.out.println("url is from webapi" + mClient.toString());
+			mClient.Execute(1);
+			String str2 = mClient.getResponse();
+			Log.v(" response of login:", str2);
+			if (str2 != null) {
+				key= ((JSONObject) new JSONObject(str2).getJSONArray(
+						"login").get(0)).getString("result");
+
+				Value = ((JSONObject) new JSONObject(str2).getJSONArray(
+						"login").get(0)).getString("userid");
+
+				hashmap.put(key, Value);
+			}
+		} catch (Exception localException) {
+			localException.printStackTrace();
+		}
+		return hashmap;
+	}
+	 */
+	/*public static ArrayList<StoreDTO> getStoreData() {
+		ArrayList<StoreDTO> store_List = new ArrayList<StoreDTO>();
+		mClient.ClearParam();
+		mClient.AddParam("task", "stores");
+		try {
+			mClient.Execute(0);
+			String response = mClient.getResponse();
+			if (!"".equalsIgnoreCase(response) && response != null) {
+				Log.v("Store data Response:", response);
+				JSONArray localJSONArray = new JSONObject(response).getJSONArray("stores");
+				for (int i = 0; i < localJSONArray.length(); i++) {
+					JSONObject localJSONObject = (JSONObject) localJSONArray.get(i);
+					StoreDTO storeDto = new StoreDTO();
+					if (localJSONObject.has("id")) {
+						storeDto.store_id = localJSONObject.getString("id");
+					}
+					if (localJSONObject.has("store_name")) {
+						storeDto.store_name = localJSONObject.optString("store_name");
+					}
+					if (localJSONObject.has("store_address")) {
+						storeDto.store_address = localJSONObject.optString("store_address");
+					}
+					if (localJSONObject.has("store_phone")) {
+						storeDto.store_phoneNum = localJSONObject.optString("store_phone");
+					}
+					if (localJSONObject.has("store_email")) {
+						storeDto.store_email_id = localJSONObject.optString("store_email");
+					}
+					if (localJSONObject.has("store_long")) {
+						storeDto.store_long = localJSONObject.optString("store_long");
+					}
+					if (localJSONObject.has("store_lat")) {
+						storeDto.store_lat = localJSONObject.optString("store_lat");
+					}
+					if (localJSONObject.has("store_distance")) {
+						storeDto.store_distance = localJSONObject.optString("store_distance");
+					}
+					if (localJSONObject.has("header_message")) {
+						storeDto.header_msg = localJSONObject.optString("header_message");
+						System.out.println("storeDto.header_msg"+storeDto.header_msg);
+					}
+					if (localJSONObject.has("shoptime")) {
+						storeDto.shoptime = localJSONObject.optString("shoptime");
+					}
+					if (localJSONObject.has("extra_charges")) {
+						storeDto.extra_charges = localJSONObject.optString("extra_charges");
+					}
+					store_List.add(storeDto);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+
+		}
+		return store_List;
+	}*/
+	//http://mybellysplaylist.exceptionaire.co/mobile-api/webservice.php?task=catlist
+	public static ArrayList<JsonDTO> getJsonList(MainActivity mainActivity) {
+		ArrayList<JsonDTO> catogry_List = new ArrayList<JsonDTO>();
+		mClient.ClearParam();
+		HistoryMessageProvider historyMessageProvider=new HistoryMessageProvider(mainActivity);
+		mClient.AddParam("task", "catlist");
+		// mClient.AddParam("storeid", storeid);
+		try {
+			mClient.Execute(0);
+			String response = mClient.getResponse();
+			if (!"".equalsIgnoreCase(response) && response != null) {
+				Log.v("catlist catlist:", response);
+				JSONArray localJSONArray = new JSONObject(response)
+				.getJSONArray("catlist");
+				for (int i = 0; i < localJSONArray.length(); i++) {
+					JSONObject localJSONObject = (JSONObject) localJSONArray
+							.get(i);
+					JsonDTO Dto = new JsonDTO();
+					if (localJSONObject.has("id")) {
+						Dto.id = localJSONObject.getString("id");
+					}
+					if (localJSONObject.has("name")) {
+						Dto.name = localJSONObject.optString("name");
+					}
+					
+					historyMessageProvider.addJsonDataInfo(Dto.id, Dto.id, Dto.name, Dto.name, Dto.name, Dto.name, Dto.name, Dto.name);
+					catogry_List.add(Dto);
+				}
+				
+				historyMessageProvider.closeConnection();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+
+		}
+		return catogry_List;
+	}
+	/*//http://mybellysplaylist.exceptionaire.co/mobile-api/webservice.php?task=prolist&catid=xx&storeid=xx 
+	public static ArrayList<ProductDTO> getProductList(String catid,String storeid) {
+		ArrayList<ProductDTO> product_List = new ArrayList<ProductDTO>();
+		mClient.ClearParam();
+		mClient.AddParam("task", "prolist");
+		mClient.AddParam("catid", catid);
+		mClient.AddParam("storeid",storeid );
+		try {
+			mClient.Execute(0);
+			//String response ="{\"catlist\": [{\"id\": \"161\",\"name\": \"deep river\",\"price\": \"1.50\",\"attribute_list\": [{\"id\": \"12\",\"name\": \"options\",\"price\": \"$0\"},{\"id\":\"13\",\"name\": \"horseradish cheddar( $5 )\",\"price\": \"$5\"},{\"id\": \"14\",\"name\": \"spicy dill( $6 )\", \"price\": \"$6\"}]}]}";
+
+			String response = mClient.getResponse();
+			if (!"".equalsIgnoreCase(response) && response != null) {
+				Log.v("get product list", response);
+				JSONArray localJSONArray = new JSONObject(response).getJSONArray("prolist");
+				for (int i = 0; i < localJSONArray.length(); i++) {
+					JSONObject localJSONObject = (JSONObject) localJSONArray
+							.get(i);
+					ProductDTO Dto = new ProductDTO();
+					if (localJSONObject.has("id")) {
+						Dto.product_id = localJSONObject.getString("id");
+						System.out.println("ids------from webapi---" + Dto.product_id);
+					}
+					if (localJSONObject.has("name")) {
+						Dto.product_name = localJSONObject.optString("name");
+						System.out.println("name------from webapi---" + Dto.product_name);
+					}
+					if (localJSONObject.has("price")) {
+						Dto.product_price = localJSONObject.optString("price");
+						Dto.product_price_temp = localJSONObject.optString("price");
+					}
+					if (localJSONObject.has("product_image")) {
+						Dto.product_image_url = localJSONObject.optString("product_image");
+
+					}
+					if (localJSONObject.has("product_description")) {
+						Dto.product_desc = localJSONObject.optString("product_description");
+
+					}
+					if(localJSONObject.has("attributestatus")){
+						Dto.attributList_status = localJSONObject.optString("attributestatus");
+						System.out.println("Attribut status------from webapi---" + localJSONObject.optString("attributestatus") );
+					}
+					if(localJSONObject.has("attribute_count")){
+						Dto.attribute_count= localJSONObject.optString("attribute_count");
+						System.out.println("attribute_count ------from webapi---" + localJSONObject.optString("attribute_count") );
+					}
+					//if(localJSONObject.optString("attributestatus").equalsIgnoreCase("1")){
+					if(Dto.attribute_count.equalsIgnoreCase("2")){
+						JSONArray jArray = localJSONObject.getJSONArray("attribute_list1");
+						// To get the items from the array
+						for (int i1 = 0; i1 <jArray.length(); i1++) {
+							try {
+								JSONObject oneObject = jArray.getJSONObject(i1);
+								DetailsDTO detailsdto=new DetailsDTO();
+
+								detailsdto.attribute_ids =oneObject.optString("id");
+								detailsdto.attribute_names = oneObject.optString("name").replaceAll("  ", "");
+								detailsdto.attribute_price = oneObject.optString("price");
+								Dto.details_List.add(detailsdto);
+
+							} catch (JSONException e) {
+								// Oops
+							}
+						}
+						JSONArray jArray1 = localJSONObject.getJSONArray("attribute_list2");
+						// To get the items from the array
+						for (int i1 = 0; i1 <jArray1.length(); i1++) {
+							try {
+								JSONObject oneObject = jArray1.getJSONObject(i1);
+								AddOnDTO adddto=new AddOnDTO();
+								adddto.attribute_ids =oneObject.optString("id");
+								adddto.attribute_names = oneObject.optString("name").replaceAll("  ", "");
+								System.out.println("adddto.attribute_names from web api---"+adddto.attribute_names);
+								adddto.attribute_price = oneObject.optString("price");
+								Dto.addOn_List.add(adddto);
+
+							} catch (JSONException e) {
+								// Oops
+							}
+						}
+					}else if(Dto.attribute_count.equalsIgnoreCase("1")){
+						JSONArray jArray2 = localJSONObject.getJSONArray("attribute_list1");
+						// To get the items from the array
+						for (int i1 = 0; i1 <jArray2.length(); i1++) {
+							try {
+								JSONObject oneObject = jArray2.getJSONObject(i1);
+								DetailsDTO detailsdto=new DetailsDTO();
+								detailsdto.attribute_ids =oneObject.optString("id");
+								detailsdto.attribute_names = oneObject.optString("name").replaceAll("  ", "");
+								System.out.println("adddto.attribute_names from web api---"+detailsdto.attribute_names);
+								detailsdto.attribute_price = oneObject.optString("price");
+								Dto.details_List.add(detailsdto);
+
+							} catch (JSONException e) {
+								// Oopsif(localJSONObject.optString("attributestatus").equalsIgnoreCase("1")){
+							}
+						}
+					}
+
+					 for (int j = 1; j <=Integer.parseInt(Dto.attribute_count); j++) {
+						 JSONArray jArray = localJSONObject.getJSONArray("attribute_list"+j);
+							// To get the items from the array
+							for (int i1 = 0; i1 <jArray.length(); i1++) {
+								try {
+									JSONObject oneObject = jArray.getJSONObject(i1);
+									DetailsDTO detailsdto=new DetailsDTO();
+									detailsdto.attribute_ids =oneObject.optString("id");
+									detailsdto.attribute_names = oneObject.optString("name");
+									detailsdto.attribute_price = oneObject.optString("price");
+									Dto.details_List.add(detailsdto);
+
+								} catch (JSONException e) {
+									// Oops
+								}
+							}
+
+					 }
+
+
+					//}
+
+
+
+					System.out.println("_______________________________________________");
+
+					product_List.add(Dto);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+
+		}
+		return product_List;
+	}
+	// http://mybellysplaylist.exceptionaire.co/mobile-api/webservice.php?task=removeitem&storeid=x&productid=x&qty=x&unid=x 
+	// ForgotPassword API
+	public static String removeSingleProduct(String storeid,String productid,String qty,String unid) {
+		mClient.ClearParam();
+		String str = "";
+		mClient.AddParam("task", "removeitem");
+		mClient.AddParam("storeid", storeid);
+		mClient.AddParam("productid",productid);
+		mClient.AddParam("qty", qty);
+		mClient.AddParam("unid",unid);
+		try {
+			mClient.Execute(0);
+			String response = mClient.getResponse();
+			if (!"".equalsIgnoreCase(response) && response != null) {
+				Log.v("Remove single item Response:", response);
+				JSONArray localJSONArray = new JSONObject(response).getJSONArray("removeitem");
+				for (int i = 0; i < localJSONArray.length(); i++) {
+					JSONObject localJSONObject = (JSONObject) localJSONArray.get(0);
+
+					if (localJSONObject.has("result")) {
+						str = localJSONObject.optString("result");
+
+					} 
+				}
+			}
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return str;
+	}
+	// http://mybellysplaylist.exceptionaire.co/mobile-api/webservice.php?task=emptycart&unid=x 
+	public static String emptyProductCart(String unid) {
+		mClient.ClearParam();
+		String str = "";
+		mClient.AddParam("task", "emptycart");
+		mClient.AddParam("unid",unid);
+		try {
+			mClient.Execute(0);
+			String response = mClient.getResponse();
+			if (!"".equalsIgnoreCase(response) && response != null) {
+				Log.v("Empty cart Response:", response);
+				JSONArray localJSONArray = new JSONObject(response).getJSONArray("emptycart");
+				for (int i = 0; i < localJSONArray.length(); i++) {
+					JSONObject localJSONObject = (JSONObject) localJSONArray.get(0);
+
+					if (localJSONObject.has("result")) {
+						str = localJSONObject.optString("result");
+
+					} 
+				}
+			}
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return str;
+	}
+
+	//http://mybellysplaylist.exceptionaire.co/mobile-api/webservice.php?task=checkoutdata&userid=2
+	public static CheckOutDTO getCheckOutDetail(String userid) {
+		CheckOutDTO checkdto=new CheckOutDTO();
+		mClient.ClearParam();
+		mClient.AddParam("task", "checkoutdata");
+		mClient.AddParam("userid", userid);
+		try {
+			mClient.Execute(0);
+			String response = mClient.getResponse();
+			if (!"".equalsIgnoreCase(response) && response != null) {
+				Log.v("Checkout Response::", response);
+				JSONObject localJSONObject = (JSONObject) new JSONObject(response).getJSONArray("checkoutdata").get(0);
+				if (localJSONObject.has("result")) {
+					checkdto.result = localJSONObject.getString("result");
+					System.out.println(""+checkdto.result);
+				}
+				if(localJSONObject.getString("result").equalsIgnoreCase("1")){
+
+					if (localJSONObject.has("email_id")) {
+						checkdto.email_id = localJSONObject.optString("email_id");
+					}
+					if (localJSONObject.has("username")) {
+						checkdto.username = localJSONObject.optString("username");
+					}
+					if (localJSONObject.has("displayname")) {
+						checkdto.displayname = localJSONObject.optString("displayname");
+
+					}
+					//billing details
+					if (localJSONObject.has("bill_fname")) {
+						checkdto.bill_fname = localJSONObject.optString("bill_fname");
+					}
+					if (localJSONObject.has("bill_mname")) {
+						checkdto.bill_mname = localJSONObject.optString("bill_mname");
+					}
+					if (localJSONObject.has("bill_lname")) {
+						checkdto.bill_lname = localJSONObject.optString("bill_lname");
+					}
+					if (localJSONObject.has("bill_address")) {
+						checkdto.bill_address = localJSONObject.optString("bill_address");
+					}
+					if (localJSONObject.has("bill_zipcode")) {
+						checkdto.bill_zipcode = localJSONObject.optString("bill_zipcode");
+					}
+					if (localJSONObject.has("bill_country")) {
+						checkdto.bill_country = localJSONObject.optString("bill_country");
+					}
+					if (localJSONObject.has("bill_phone")) {
+						checkdto.bill_phone = localJSONObject.optString("bill_phone");
+					}
+					if (localJSONObject.has("bill_mobile")) {
+						checkdto.bill_mobile = localJSONObject.optString("bill_mobile");
+					}
+
+					//shipping details
+					if (localJSONObject.has("ship_fname")) {
+						checkdto.ship_fname = localJSONObject.optString("ship_fname");
+					}if (localJSONObject.has("ship_mname")) {
+						checkdto.ship_mname = localJSONObject.optString("ship_mname");
+					}
+					if (localJSONObject.has("ship_lname")) {
+						checkdto.ship_lname = localJSONObject.optString("ship_lname");
+					}
+					if (localJSONObject.has("ship_address")) {
+						checkdto.ship_address = localJSONObject.optString("ship_address");
+					}
+					if (localJSONObject.has("ship_zipcode")) {
+						checkdto.ship_zipcode = localJSONObject.optString("ship_zipcode");
+					}if (localJSONObject.has("ship_country")) {
+						checkdto.ship_country = localJSONObject.optString("ship_country");
+					}
+					if (localJSONObject.has("ship_phone")) {
+						checkdto.ship_phone = localJSONObject.optString("ship_phone");
+					}
+					if (localJSONObject.has("ship_mobile")) {
+						checkdto.ship_mobile = localJSONObject.optString("ship_mobile");
+					}
+
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return checkdto;
+	}
+
+	// http://mybellysplaylist.exceptionaire.co/mobile-api/webservice.php?task=processorder
+	// {"processorder":[{"result":"1","status":"Your order is placed successfully! Please check your email.","orderid":726}]}
+
+	public static ProcessOrderDTO setProcessOrderData(OrderData orderdata,
+			ArrayList<ShowProductCartDTO> product_cart_list,String shipping_amount,String store_id,String store_extraCharges,
+			String discountValue,String tax_amount,String tip_amount,String total_product_prize,String bill_total_value,String unid,String userid ,String  redeem_id){
+		ProcessOrderDTO processDto=new ProcessOrderDTO();
+		String product_id ="",product_quantity="" ,product_option="";
+		mClient.ClearParam();
+		mClient.AddParam("task", "processorder");
+		mClient.AddParam("store_id", store_id);
+		mClient.AddParam("shipping_amount", shipping_amount);
+		mClient.AddParam("store_extraCharge",store_extraCharges);
+		mClient.AddParam("discount",discountValue);
+		mClient.AddParam("username",LocalSettings.fb_userID);
+		mClient.AddParam("email_id", orderdata.email_id);
+		//bill data
+		mClient.AddParam("bill_fname", orderdata.bill_fname);
+		mClient.AddParam("bill_mname", orderdata.bill_mname);
+		mClient.AddParam("bill_lname", orderdata.bill_lname);
+		mClient.AddParam("bill_address", orderdata.bill_address);
+		mClient.AddParam("bill_zipcode", orderdata.bill_zipcode);
+		mClient.AddParam("bill_country", orderdata.bill_country);
+		mClient.AddParam("bill_phone", orderdata.bill_phone);
+		mClient.AddParam("bill_mobile", orderdata.bill_mobile);
+		//shipping data
+		mClient.AddParam("ship_fname", orderdata.ship_fname);
+		mClient.AddParam("ship_mname", orderdata.ship_mname);
+		mClient.AddParam("ship_lname", orderdata.ship_lname);
+		mClient.AddParam("ship_address",orderdata.ship_address);
+		mClient.AddParam("ship_zipcode",orderdata.ship_zipcode);
+		mClient.AddParam("ship_country",orderdata.ship_country);
+		mClient.AddParam("ship_phone",orderdata.ship_phone);
+		mClient.AddParam("ship_mobile",orderdata.ship_mobile);
+		//bill amount
+		mClient.AddParam("tip_amount",tip_amount);
+		mClient.AddParam("tax_amount",tax_amount);
+		mClient.AddParam("gross_amount",total_product_prize);
+		mClient.AddParam("bill_amount", bill_total_value);
+		mClient.AddParam("unid", unid);
+		mClient.AddParam("userid",userid);
+		mClient.AddParam("redeem_id",redeem_id);
+		for (int i = 0; i <product_cart_list.size(); i++) {
+			if (i  < (product_cart_list.size() - 1)){
+				product_id += product_cart_list.get(i).product_id+",";
+				product_quantity += product_cart_list.get(i).product_quantity+",";
+				product_option+= product_cart_list.get(i).product_option_id+"|";
+				if( product_cart_list.get(i).product_option_id.contains(",")){
+					String[] parts = product_cart_list.get(i).product_option_id.split(",");
+					String part1 = parts[0]; 
+					String part2 = parts[1];
+					 if(part1.equalsIgnoreCase("0")){
+						product_option+= part2+"|";
+					}else if(part2.equalsIgnoreCase("0")){
+						product_option+= part1+"|";
+					}else{
+						product_option+= part1+","+part2+"|";
+					}
+
+				}else {
+					product_option+= product_cart_list.get(i).product_option_id+"|";
+				}
+
+			}else{
+				product_id += product_cart_list.get(i).product_id;
+				product_quantity += product_cart_list.get(i).product_quantity;
+				product_option+= product_cart_list.get(i).product_option_id;
+			}
+			System.out.println("product_option-------"+product_option);
+		}
+		mClient.AddParam("product_id", product_id);
+		mClient.AddParam("product_quantity", product_quantity);
+		mClient.AddParam("product_option_id",product_option);
+		try {
+			mClient.Execute(1);
+			String response = mClient.getResponse();
+			if (!"".equalsIgnoreCase(response) && response != null) {
+				Log.v("Process Order Response:", response);
+				JSONObject localJSONObject = (JSONObject) new JSONObject(response).getJSONArray("processorder").get(0);
+				if (localJSONObject.has("result")) {
+					processDto.result = localJSONObject.getString("result");
+				}
+				if (localJSONObject.has("status")) {
+					processDto.status_msg = localJSONObject.optString("status");
+				}
+				if (localJSONObject.has("orderid")) {
+					processDto.orderid = localJSONObject.optString("orderid");
+				}
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+
+
+
+		return processDto;
+	}
+	//http://mybellysplaylist.exceptionaire.co/mobile-api/webservice.php?task=calcshipping&zipcode=10001&storeid=8
+	//07-03 09:54:07.241: V/calculate shipping Response::(5068): {"calcshipping":[{"result":"0","error":"Invalid zip code!"}]}
+
+	public static String calculateShipping(String zipcode,String store_id) {
+		String str="",str2="";
+		mClient.ClearParam();
+		mClient.AddParam("task", "calcshipping");
+		mClient.AddParam("zipcode", zipcode);
+		mClient.AddParam("storeid",store_id);
+		mClient.AddParam("zipcode", "10001");
+		mClient.AddParam("storeid", "8");
+		try {
+			mClient.Execute(0);
+			String response = mClient.getResponse();
+			if (!"".equalsIgnoreCase(response) && response != null) {
+				Log.v("calculate shipping Response::", response);
+				JSONObject localJSONObject = (JSONObject) new JSONObject(response).getJSONArray("calcshipping").get(0);
+				if (localJSONObject.has("result")) {
+					str2 = localJSONObject.getString("result");
+					System.out.println(""+str2);
+				}
+				if(localJSONObject.getString("result").equalsIgnoreCase("1")){
+					if (localJSONObject.has("amount")) {
+						str= localJSONObject.optString("amount");
+					}
+				}else{
+					str= localJSONObject.optString("result");
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return str;
+	}
+	//http://mybellysplaylist.exceptionaire.co/mobile-api/webservice.php?task=redeemlist&userid=726
+	//{"redeemlist":[{"id":"5","redeem_point":"10","redeem_percent":"4"},{"id":"6","redeem_point":"15","redeem_percent":"6"},
+	//{"id":"7","redeem_point":"20","redeem_percent":"12"}]}
+
+
+	public static ArrayList<RedeemDTO> getRedeemData(String userid) {
+
+		ArrayList<RedeemDTO>ree_list=new ArrayList<RedeemDTO>();
+		mClient.ClearParam();
+		mClient.AddParam("task", "redeemlist");
+		mClient.AddParam("userid", userid);
+
+		try {
+			mClient.Execute(0);
+			String response = mClient.getResponse();
+			if (!"".equalsIgnoreCase(response) && response != null) {
+				Log.v("Reddeem list Response::", response);
+				JSONArray localJSONArray = new JSONObject(response).getJSONArray("redeemlist");
+
+				for (int i = 0; i < localJSONArray.length(); i++) {
+					JSONObject localJSONObject = (JSONObject) localJSONArray.get(i);
+					RedeemDTO redeem_dto=new RedeemDTO();
+					if (localJSONObject.has("id")) {
+						redeem_dto.id = localJSONObject.getString("id");
+						System.out.println("ids------from webapi---" + redeem_dto.id);
+					}
+					if (localJSONObject.has("redeem_point")) {
+						redeem_dto.redeem_point = localJSONObject.optString("redeem_point");
+						System.out.println("name------from webapi---" + redeem_dto.redeem_point);
+					}
+					if (localJSONObject.has("redeem_percent")) {
+						redeem_dto.redeem_percent = localJSONObject.optString("redeem_percent");
+
+					}
+					if (localJSONObject.has("earnedpints")) {
+						redeem_dto.earnedpints = localJSONObject.optString("earnedpints");
+
+					}
+
+					System.out.println("_______________________________________________");
+
+					ree_list.add(redeem_dto);
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return ree_list;
+	}
+	// http://mybellysplaylist.exceptionaire.co/mobile-api/webservice.php?task=calctax&grossamt=1200&discamount=0
+	//{"calctax":[{"result":"1","taxamount":"88.75"}]}
+	
+	// http://mybellysplaylist.exceptionaire.co/mobile-api/webservice.php?task=calctax&grossamt=xx&discamount=xx&shipping=xx&extra_charge=xx
+	public static String calculateTax(String gross_amount,String discamount,String shipping,String extra_charge  ) {
+		String tax_value="";
+		String result="";
+		//ArrayList<RedeemDTO>ree_list=new ArrayList<RedeemDTO>();
+		mClient.ClearParam();
+		mClient.AddParam("task", "calctax");
+		mClient.AddParam("grossamt", gross_amount);
+		mClient.AddParam("discamount", discamount);
+		mClient.AddParam("shipping", shipping);
+		mClient.AddParam("extra_charge", extra_charge);
+
+		try {
+			mClient.Execute(0);
+			String response = mClient.getResponse();
+			if (!"".equalsIgnoreCase(response) && response != null) {
+				Log.v("calculate shipping Response::", response);
+				JSONObject localJSONObject = (JSONObject) new JSONObject(response).getJSONArray("calctax").get(0);
+				if (localJSONObject.has("result")) {
+					result = localJSONObject.getString("result");
+					System.out.println(""+result);
+				}
+				if(localJSONObject.getString("result").equalsIgnoreCase("1")){
+					if (localJSONObject.has("taxamount")) {
+						tax_value= localJSONObject.optString("taxamount");
+					}
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return tax_value;
+	}
+	// http://mybellysplaylist.exceptionaire.co/mobile-api/webservice.php?task=calcdiscount&grossamt=1234&discpercent=5
+	public static String calculateDiscount(String gross_amount,String discount_percent) {
+		String discount_value="";
+		String result="";
+		//ArrayList<RedeemDTO>ree_list=new ArrayList<RedeemDTO>();
+		mClient.ClearParam();
+		mClient.AddParam("task", "calcdiscount");
+		mClient.AddParam("grossamt", gross_amount);
+		mClient.AddParam("discpercent", discount_percent);
+
+		try {
+			mClient.Execute(0);
+			String response = mClient.getResponse();
+			if (!"".equalsIgnoreCase(response) && response != null) {
+				Log.v("calculate shipping Response::", response);
+				JSONObject localJSONObject = (JSONObject) new JSONObject(response).getJSONArray("calcdiscount").get(0);
+				if (localJSONObject.has("result")) {
+					result = localJSONObject.getString("result");
+					System.out.println(""+result);
+				}
+				if(localJSONObject.getString("result").equalsIgnoreCase("1")){
+					if (localJSONObject.has("discountval")) {
+						discount_value= localJSONObject.optString("discountval");
+					}
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return discount_value;
+	}
+	//http://mybellysplaylist.exceptionaire.co/mobile-api/webservice.php?task=reward&userid=x
+	//{"reward":[{"result":"1","reward_points":"10","total_points":275}]}
+
+	public static RewardDTO getRewardPoint(String userid) {
+		RewardDTO dto=new RewardDTO();
+		mClient.ClearParam();
+		mClient.AddParam("task", "reward");
+		mClient.AddParam("userid", userid);
+		try {
+			mClient.Execute(0);
+			String response = mClient.getResponse();
+			if (!"".equalsIgnoreCase(response) && response != null) {
+				Log.v("getRewardPoint Response::", response);
+				JSONObject localJSONObject = (JSONObject) new JSONObject(response).getJSONArray("reward").get(0);
+				if (localJSONObject.has("result")) {
+					dto.result = localJSONObject.getString("result");
+				}
+				if (localJSONObject.has("reward_points")) {
+					dto.reward_points= localJSONObject.optString("reward_points");
+				}
+				if (localJSONObject.has("total_points")) {
+					dto.total_points= localJSONObject.optString("total_points");
+				}
+
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return dto;
+	}
+	public static boolean DownloadFileToSDCard(String paramString1,
+			String paramString2, String paramString3) {
+		boolean bool = false;
+		String s = paramString1;
+		if (Environment.getExternalStorageState().equals("mounted")) {
+			if ((!new File(Environment.getExternalStorageDirectory(),
+					paramString2 + "/" + paramString3).exists())
+					|| (UpdateFlag)) {
+
+			} else {
+				bool = true;
+			}
+		} else {
+			bool = false;
+		}
+		return bool;
+	}
+
+	public static void Init(Context paramContext) {
+		_context = paramContext;
+	}
+
+	public static boolean isDeviceOnline() {
+		boolean i = false;
+		try {
+			NetworkInfo localNetworkInfo = ((ConnectivityManager) _context.getSystemService("connectivity")).getActiveNetworkInfo();
+			if ((localNetworkInfo != null)
+					&& (localNetworkInfo.getState() == NetworkInfo.State.CONNECTED))
+				i = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return i;
+	}
+
+	public final boolean isInternetOn() {
+		boolean flag = false;
+		ConnectivityManager localConnectivityManager = (ConnectivityManager) _context
+				.getSystemService("connectivity");
+		if ((localConnectivityManager.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED)
+				|| (localConnectivityManager.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTING)
+				|| (localConnectivityManager.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTING)
+				|| (localConnectivityManager.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTED))
+			flag = true;
+		if ((localConnectivityManager.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED)
+				|| (localConnectivityManager.getNetworkInfo(1).getState() != NetworkInfo.State.DISCONNECTED))
+			flag = false;
+
+		return flag;
+	}
+*/
+}
